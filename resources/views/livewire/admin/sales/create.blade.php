@@ -153,7 +153,7 @@
                                                     <h5 class="mt-2 text-red">Total</h5>
                                                 </td>
                                                 <td wire:ignore.self>
-                                                    <h5 class="mt-2 text-red">Rp. {{ number_format($total_amount, 2, ',', '.') }}</h5>
+                                                    <h5 class="mt-2 text-red">Rp. {{ number_format((float)$total_amount, 2, ',', '.') }}</h5>
                                                 </td>
                                             </tr>
                                         </tbody>

@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Models\Core\Product;
 use App\Models\Core\SalesItems;
 use Illuminate\Support\Facades\DB;
+use App\Models\LogActivity\LogStore;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
 
 class Create extends Component
@@ -134,7 +135,7 @@ class Create extends Component
 
             // Simpan data item invoice dan kurangi stok produk
             foreach ($this->products as $product) {
-                SalesItems::create([
+                $salesItem = SalesItems::create([
                     'sale_id' => $sales->id,
                     'product_id' => $product['product_id'],
                     'quantity' => $product['quantity'],
@@ -147,11 +148,18 @@ class Create extends Component
                     $productModel->stock -= $product['quantity'];
                     $productModel->save();
                 }
+
+                LogStore::create([
+                    'store_id' => auth()->user()->store->id,
+                    'user_id' => auth()->user()->id,
+                    'activity' => 'Sale',
+                    'description' => 'Menjual produk ' . $productModel->name . ' sebanyak ' . $product['quantity'] . ' unit dengan harga Rp ' . number_format($product['price'], 0, ',', '.') . ' per unit',
+                ]);
             }
         });
 
         $this->resetForm();
-        $this->alert('success', 'Data dengan nomor faktur ' . $this->invoice_number . ' berhasil disimpan');
+        $this->flash('success', 'Invoice Berhasil ditambahkan', [], route('admin.sales'));
     }
 
 
