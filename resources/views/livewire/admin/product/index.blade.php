@@ -6,10 +6,10 @@
         <ol class="breadcrumb d-none d-lg-flex">
             <li class="breadcrumb-item">
                 <i class="bi bi-house lh-1"></i>
-                <a href="index.html" class="text-decoration-none">Home</a>
+                <a href="{{ route('admin.dashboard') }}" class="text-decoration-none">Home</a>
             </li>
             <li class="breadcrumb-item" aria-current="page">
-                Advanced Cards
+                Produk
             </li>
         </ol>
         <!-- Breadcrumb end -->
@@ -91,6 +91,11 @@
         </div>
         <!-- Row end -->
 
+        <!-- Pagination start -->
+        <div class="d-flex justify-content-center">
+            {{ $datas->links('pagination::one') }}
+        </div>
+
     </div>
     <!-- App body ends -->
 
@@ -120,24 +125,32 @@
                             @error('image.*') <span class="text-danger">{{ $message }}</span> @enderror
                             <!-- Image preview section -->
                             <div class="mt-2" wire:loading.remove wire:target="image">
+                                @if ($prevImage)
+                                <h6>Gambar Sebelumnya</h6>
+                                <div class="d-flex flex-wrap">
+                                    @foreach ($prevImage as $key => $img)
+                                    <div class="d-flex flex-column align-items-center me-3 mb-3">
+                                        <img src="{{ asset('storage/product/' . $img) }}" alt="Preview Image"
+                                            class="img-thumbnail mb-2" style="max-width: 100px; height:100px">
+                                        <button type="button" wire:click="removePrevImage({{ $key }})"
+                                            class="btn btn-sm btn-danger">Hapus</button>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @endif
+
                                 @if ($image)
-                                @foreach ($image as $key => $image)
-                                <div class="d-flex align-items-center mb-2">
-                                    <img src="{{ $image->temporaryUrl() }}" alt="Preview Image"
-                                        class="img-thumbnail me-2" style="max-width: 100px;">
-                                    <button type="button" wire:click="removeImage({{ $key }})"
-                                        class="btn btn-sm btn-danger">Hapus</button>
+                                <h6>Gambar Baru</h6>
+                                <div class="d-flex flex-wrap">
+                                    @foreach ($image as $key => $img)
+                                    <div class="d-flex flex-column align-items-center me-3 mb-3">
+                                        <img src="{{ $img->temporaryUrl() }}" alt="Preview Image"
+                                            class="img-thumbnail mb-2" style="max-width: 100px;">
+                                        <button type="button" wire:click="removeImage({{ $key }})"
+                                            class="btn btn-sm btn-danger">Hapus</button>
+                                    </div>
+                                    @endforeach
                                 </div>
-                                @endforeach
-                                @elseif ($prevImage)
-                                @foreach ($prevImage as $key => $image)
-                                <div class="d-flex align-items-center mb-2">
-                                    <img src="{{ asset('storage/product/' . $image) }}" alt="Preview Image"
-                                        class="img-thumbnail me-2" style="max-width: 100px;">
-                                    <button type="button" wire:click="removePrevImage({{ $key }})"
-                                        class="btn btn-sm btn-danger">Hapus</button>
-                                </div>
-                                @endforeach
                                 @endif
                             </div>
                             <!-- Loading spinner during image upload -->

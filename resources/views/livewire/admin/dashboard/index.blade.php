@@ -7,7 +7,7 @@
         <ol class="breadcrumb d-none d-lg-flex">
           <li class="breadcrumb-item">
             <i class="bi bi-house lh-1"></i>
-            <a href="index.html" class="text-decoration-none">Home</a>
+            <a href="{{ route('admin.dashboard') }}" class="text-decoration-none">Home</a>
           </li>
           <li class="breadcrumb-item" aria-current="page">
             Dashboard

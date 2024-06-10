@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('log_stores', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('store_id')->constrained('stores')->onDelete('cascade')->nullable();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade')->nullable();
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade')->nullable();
+            $table->foreignId('store_id')->constrained('stores')->nullable();
+            $table->foreignId('user_id')->constrained('users')->nullable();
+            $table->foreignId('product_id')->nullable();
             $table->string('activity');
             $table->string('description');
             $table->timestamps();

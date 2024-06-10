@@ -15,9 +15,10 @@ class Index extends Component
         $data = Store::where('id', auth()->user()->store_id)->first();
 
         // log activity
-        $activities = LogStore::where('store_id', auth()->user()->store_id)->orderBy('id', 'desc')->get();
+        $activities = LogStore::where('store_id', auth()->user()->store_id)->orderBy('created_at', 'desc')->take(10)->get();
 
-        $products = Product::where('store_id', auth()->user()->store_id)->get();
+
+        $products = Product::where('store_id', auth()->user()->store_id)->take(12)->get();
 
         return view('livewire.admin.store.index',[
             'data' => $data,

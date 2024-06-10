@@ -1,3 +1,8 @@
+<?php
+
+use Carbon\Carbon;
+
+?>
 <div>
     {{-- To attain knowledge, add things every day; To attain wisdom, subtract things every day. --}}
     <div class="app-hero-header d-flex align-items-start">
@@ -6,7 +11,7 @@
         <ol class="breadcrumb d-none d-lg-flex">
             <li class="breadcrumb-item">
                 <i class="bi bi-house lh-1"></i>
-                <a href="index.html" class="text-decoration-none">Home</a>
+                <a href="{{ route('admin.dashboard') }}" class="text-decoration-none">Home</a>
             </li>
             <li class="breadcrumb-item" aria-current="page">
                 {{-- jika ada kata toko maka tidak perlu ada tulisan toko --}}
@@ -121,10 +126,14 @@
                     <div class="card-body">
                         <div class="row g-2 row-cols-3">
                             @forelse ($products as $item)
-                                <div class="col">
-                                    <img src="{{ asset('storage/product/'.$item->image ?? 'default.jpg') }}" class="img-fluid rounded-2"
-                                        alt="" />
-                                </div>
+                                @if ($item->image)
+                                    @foreach (json_decode($item->image) as $image)
+                                        <div class="col">
+                                            <img src="{{ asset('storage/product/'.$image) }}" class="img-fluid rounded"
+                                                alt="Bootstrap Admin" style="height: 90px" />
+                                        </div>
+                                    @endforeach
+                                @endif
                             @empty
                             {{-- belum ada product --}}
                                 <div class="col">
@@ -147,13 +156,24 @@
                             <div class="my-2">
                                 @forelse ($activities as $log)
                                 <div class="activity-block d-flex position-relative">
-                                    <img src="assets/images/user2.png" class="img-4x me-3 rounded-circle activity-user"
+                                    <img src="{{ asset('storage/user/'.$log->User->photo) }}" class="img-4x me-3 rounded-circle activity-user"
                                         alt="Admin Dashboard" />
                                     <div class="mb-3">
-                                        <h5>Sophie Michiels</h5>
-                                        <p class="m-0">3 day ago</p>
-                                        <p>Paid invoice ref. #26788</p>
-                                        <span class="badge bg-info">Sent</span>
+                                        <h5>{{ $log->User->name }}</h5>
+                                        {{-- carbon created_at --}}
+                                        <p class="m-0">
+                                            {{ Carbon::parse($log->created_at)->diffForHumans() }}
+                                        </p>
+                                        <p>
+                                            {{ $log->description }}
+                                        </p>
+                                        @if ($log->activity == 'Create')
+                                            <span class="badge bg-success">Buat</span>
+                                        @elseif($log->activity == 'Update')
+                                            <span class="badge bg-warning">Mengubah</span>
+                                        @elseif($log->activity == 'Delete')
+                                            <span class="badge bg-danger">Hapus</span>
+                                        @endif
                                     </div>
                                 </div>
                                 @empty

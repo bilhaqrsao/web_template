@@ -66,6 +66,10 @@
             </div>
             @endforelse
         </div>
+
+        <div class="d-flex justify-content-center">
+            {{ $datas->links('pagination::one') }}
+        </div>
     </div>
 
     @if ($user->hasRole('developer') || $user->hasRole('super-admin'))

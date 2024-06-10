@@ -17,7 +17,7 @@ class Index extends Component
 {
     use WithPagination,LivewireAlert,WithFileUploads;
     public $name, $price, $category_id, $sub_category_id, $description, $image, $stock, $status, $store_id, $google_id;
-    public $dataId, $data;
+    public $dataId, $data, $dataIdToRemove;
     public $prevImage = [];
 
     public $search;
@@ -27,6 +27,7 @@ class Index extends Component
     {
         return [
             'onConfirmedAction' => 'onConfirmedAction',
+            'confirmRemoveImage' => 'confirmRemoveImage'
         ];
     }
 
@@ -132,7 +133,7 @@ class Index extends Component
             $log->store_id = auth()->user()->store_id;
             $log->user_id = auth()->user()->id;
             $log->product_id = $data->id;
-            $log->activity = 'Menambahkan produk '.$data->name;
+            $log->activity = 'Create';
             $log->description = 'Menambahkan produk '.$data->name.' dengan harga Rp.'.number_format($data->price, 0, ',', '.'). ' dan stok '.$data->stock;
             $log->save();
         }
@@ -179,26 +180,21 @@ class Index extends Component
             $data->name = $this->name;
             $data->slug = Str::slug($this->name);
             $data->price = $this->price;
-            $this->category_id = $data->category_id;
-            $this->sub_category_id = $data->sub_category_id;
+            $data->category_id = $this->category_id;
+            $data->sub_category_id = $this->sub_category_id;
             $data->description = $this->description;
             $data->stock = $this->stock;
             $data->status = '1';
             $data->store_id = auth()->user()->store_id;
 
-            // Proses penghapusan gambar dan penambahan gambar baru
+            // Jika ada gambar yang diunggah baru, tambahkan ke gambar yang sudah ada
             if ($this->image) {
-                // Hapus gambar yang sebelumnya
-                foreach ($this->prevImage as $prevImage) {
-                    $path = public_path('storage/product/' . $prevImage);
-                    if (file_exists($path)) {
-                        unlink($path);
-                    }
-                    $this->prevImage = array_values($this->prevImage);
-                }
-
-                // Upload gambar baru
                 $imageNames = [];
+
+                // Simpan gambar yang sudah ada
+                $existingImages = json_decode($data->image);
+
+                // Tambahkan gambar baru
                 foreach ($this->image as $image) {
                     $imageName = auth()->user()->store->name . '-' . time() . '-' . uniqid() . '.' . $image->extension();
                     $destinationPath = public_path('storage/product/');
@@ -209,8 +205,8 @@ class Index extends Component
                     $imageNames[] = $imageName;
                 }
 
-                // Gabungkan gambar baru dengan gambar sebelumnya
-                $data->image = json_encode(array_merge($imageNames, $this->prevImage));
+                // Gabungkan gambar baru dengan gambar yang sudah ada
+                $data->image = json_encode(array_merge($existingImages, $imageNames));
             }
 
             $data->save();
@@ -223,7 +219,7 @@ class Index extends Component
             $log->store_id = auth()->user()->store_id;
             $log->user_id = auth()->user()->id;
             $log->product_id = $data->id;
-            $log->activity = 'Mengupdate produk '.$data->name;
+            $log->activity = 'Update';
             $log->description = 'Mengupdate produk '.$data->name.' dengan harga Rp.'.number_format($data->price, 0, ',', '.'). ' dan stok '.$data->stock;
             $log->save();
         }
@@ -233,6 +229,42 @@ class Index extends Component
     {
         unset($this->image[$index]);
         $this->image = array_values($this->image); // Reindex array
+    }
+
+    public function removePrevImage($index)
+    {
+        $this->dataIdToRemove = $index; // Simpan indeks gambar yang akan dihapus
+        $this->confirm('Apakah Anda yakin ingin menghapus gambar ini?', [
+            'text' => 'Gambar yang dihapus tidak dapat dikembalikan!',
+            'icon' => 'warning',
+            'showCancelButton' => true,
+            'onConfirmed' => 'confirmRemoveImage',
+            'onCancelled' => 'cancelled'
+        ]);
+    }
+
+    public function confirmRemoveImage()
+    {
+        $index = $this->dataIdToRemove;
+        $imageName = $this->prevImage[$index];
+
+        // Hapus gambar dari penyimpanan
+        $path = public_path('storage/product/' . $imageName);
+        if (file_exists($path)) {
+            unlink($path);
+        }
+
+        // Hapus nama gambar dari database
+        $data = Product::find($this->dataId);
+        $images = json_decode($data->image);
+        unset($images[$index]);
+        $data->image = json_encode(array_values($images));
+        $data->save();
+
+        // Reindex array
+        $this->prevImage = array_values($images);
+
+        $this->alert('success', 'Gambar berhasil dihapus');
     }
 
     public function destroy($id)
@@ -262,12 +294,12 @@ class Index extends Component
         $this->alert('success', $this->data['name'].' berhasil dihapus');
 
         // log activity
-        // $log = new LogStore();
-        // $log->store_id = auth()->user()->store_id;
-        // $log->user_id = auth()->user()->id;
-        // $log->activity = 'Menghapus produk '.$this->data['name'];
-        // $log->description = 'Menghapus produk '.$this->data['name'].' dengan harga Rp.'.number_format($this->data['price'], 0, ',', '.'). ' dan stok '.$this->data['stock'];
-        // $log->save();
+        $log = new LogStore();
+        $log->store_id = auth()->user()->store_id;
+        $log->user_id = auth()->user()->id;
+        $log->activity = 'Delete';
+        $log->description = 'Menghapus produk '.$this->data['name'].' dengan harga Rp.'.number_format($this->data['price'], 0, ',', '.'). ' dan stok '.$this->data['stock'];
+        $log->save();
     }
 
 }
