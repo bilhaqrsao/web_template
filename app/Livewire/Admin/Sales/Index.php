@@ -11,7 +11,7 @@ class Index extends Component
 {
     use WithPagination,LivewireAlert;
 
-    public $data;
+    public $data, $search;
 
     public function getListeners()
     {
@@ -22,7 +22,9 @@ class Index extends Component
 
     public function render()
     {
-        $datas = Sales::where('store_id', auth()->user()->store_id)->paginate(10);
+        $datas = Sales::where('store_id', auth()->user()->store_id)->when($this->search, function($query){
+            $query->where('invoice_number', 'like', '%'.$this->search.'%');
+        })->orderBy('id', 'desc')->paginate(10);
 
         return view('livewire.admin.sales.index',[
             'datas' => $datas

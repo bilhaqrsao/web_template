@@ -23,8 +23,13 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="d-flex align-items-center">
+                            {{-- search by name --}}
+                            <div class="search-container d-lg-flex d-none">
+                                <input wire:model.live="search" type="text" class="form-control" id="searchData" placeholder="Cari Nomor Invoice">
+                                <i class="bi bi-search"></i>
+                            </div>
                             <div class="dropdown ms-auto">
-                                <a href="{{ route('admin.sales.create') }}" class="btn btn-light" type="button">
+                                <a href="{{ route('admin.sales.create') }}" wire:navigate class="btn btn-light" type="button">
                                     <i class="bi bi-plus"></i> Transaksi
                                 </a>
                             </div>
@@ -36,7 +41,7 @@
                                 <thead>
                                     <tr>
                                         <th>Kasir</th>
-                                        <th>Nomer Invoice</th>
+                                        <th>Nomor Invoice</th>
                                         <th>Produk</th>
                                         <th>Total Harga</th>
                                         <th>Status</th>
@@ -81,6 +86,10 @@
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 @endif
+                                                {{-- detail invoice --}}
+                                                <a href="{{ route('admin.sales.detail', $data->invoice_number) }}" class="btn btn-sm btn-info">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     @empty

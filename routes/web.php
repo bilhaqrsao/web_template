@@ -41,6 +41,7 @@ Route::middleware(['auth', 'visitor'])->group(function () {
         Route::get('/sales', App\Livewire\Admin\Sales\Index::class)->name('admin.sales');
         Route::get('/sales/create', App\Livewire\Admin\Sales\Create::class)->name('admin.sales.create');
         Route::get('/sales/{id}/edit', App\Livewire\Admin\Sales\Edit::class)->name('admin.sales.edit');
+        Route::get('/sales/{invoice_number}', App\Livewire\Admin\Sales\Detail::class)->name('admin.sales.detail');
     });
 
     Route::middleware(['role:admin'])->group(function () {
