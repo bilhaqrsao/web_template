@@ -262,12 +262,12 @@ class Index extends Component
         $this->alert('success', $this->data['name'].' berhasil dihapus');
 
         // log activity
-        $log = new LogStore();
-        $log->store_id = auth()->user()->store_id;
-        $log->user_id = auth()->user()->id;
-        $log->activity = 'Menghapus produk '.$this->data['name'];
-        $log->description = 'Menghapus produk '.$this->data['name'].' dengan harga Rp.'.number_format($this->data['price'], 0, ',', '.'). ' dan stok '.$this->data['stock'];
-        $log->save();
+        // $log = new LogStore();
+        // $log->store_id = auth()->user()->store_id;
+        // $log->user_id = auth()->user()->id;
+        // $log->activity = 'Menghapus produk '.$this->data['name'];
+        // $log->description = 'Menghapus produk '.$this->data['name'].' dengan harga Rp.'.number_format($this->data['price'], 0, ',', '.'). ' dan stok '.$this->data['stock'];
+        // $log->save();
     }
 
 }
