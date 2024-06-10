@@ -269,37 +269,49 @@ class Index extends Component
 
     public function destroy($id)
     {
-        $this->confirm('Apakah anda yakin?', [
-            'text' => 'Data yang dihapus tidak dapat dikembalikan!',
-            'icon' => 'warning',
-            'showCancelButton' => true,
-            'onConfirmed' => 'onConfirmedAction',
-            'onCancelled' => 'cancelled'
-         ]);
+        $this->data = Product::find($id);
 
-         $this->data = Product::find($id);
+        if ($this->data) {
+            $this->confirm('Apakah anda yakin?', [
+                'text' => 'Data yang dihapus tidak dapat dikembalikan!',
+                'icon' => 'warning',
+                'showCancelButton' => true,
+                'onConfirmed' => 'onConfirmedAction',
+                'onCancelled' => 'cancelled'
+            ]);
+        } else {
+            $this->alert('error', 'Produk tidak ditemukan');
+        }
     }
 
     public function onConfirmedAction()
     {
-        $data = Product::find($this->data['id']);
-        $images = json_decode($data->image);
-        foreach ($images as $image) {
-            $path = public_path('storage/product/' . $image);
-            if (file_exists($path)) {
-                unlink($path);
+        if ($this->data) {
+            $images = json_decode($this->data->image);
+            foreach ($images as $image) {
+                $path = public_path('storage/product/' . $image);
+                if (file_exists($path)) {
+                    unlink($path);
+                }
             }
-        }
-        $data->delete();
-        $this->alert('success', $this->data['name'].' berhasil dihapus');
 
-        // log activity
-        $log = new LogStore();
-        $log->store_id = auth()->user()->store_id;
-        $log->user_id = auth()->user()->id;
-        $log->activity = 'Delete';
-        $log->description = 'Menghapus produk '.$this->data['name'].' dengan harga Rp.'.number_format($this->data['price'], 0, ',', '.'). ' dan stok '.$this->data['stock'];
-        $log->save();
+            $this->data->delete();
+
+            $this->alert('success', $this->data->name . ' berhasil dihapus');
+
+            // log activity
+            $log = new LogStore();
+            $log->store_id = auth()->user()->store_id;
+            $log->user_id = auth()->user()->id;
+            $log->activity = 'Delete';
+            $log->description = 'Menghapus produk ' . $this->data->name . ' dengan harga Rp.' . number_format($this->data->price, 0, ',', '.') . ' dan stok ' . $this->data->stock;
+            $log->save();
+
+            // Reset data to prevent holding references to deleted item
+            $this->data = null;
+        } else {
+            $this->alert('error', 'Produk tidak ditemukan');
+        }
     }
 
 }

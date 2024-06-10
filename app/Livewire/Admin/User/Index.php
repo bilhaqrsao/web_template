@@ -201,13 +201,15 @@ class Index extends Component
 
     public function resetInput()
     {
-        $this->name = '';
-        $this->username = '';
-        $this->email = '';
-        $this->password = '';
-        $this->photo = '';
-        $this->role = '';
-        $this->store_id = '';
+            $this->name = '';
+            $this->username = '';
+            $this->email = '';
+            $this->phone = '';
+            $this->password = '';
+            $this->photo = '';
+            $this->role = '';
+            $this->store_id = '';
+
     }
 
     public function store()

@@ -20,6 +20,32 @@ class Sidebar extends Component
                 'child' => [],
             ],
             [
+                'hasRole' => 'admin,user',
+                'name' => 'Sales',
+                'icon' => 'bi bi-cash',
+                'active' => request()->routeIs('admin.sales') || request()->routeIs('admin.sales.create') || request()->routeIs('admin.sales.edit'),
+                'route' => 'admin.sales',
+                'space' => true,
+                'child' => [
+                    [
+                        'hasRole' => 'admin,user',
+                        'name' => 'Daftar Penjualan',
+                        'icon' => 'bi bi-cash',
+                        'active' => request()->routeIs('admin.sales'),
+                        'link' => 'admin.sales',
+                    ],
+                ],
+            ],
+            [
+                'hasRole' => 'admin',
+                'name' => 'Inventory',
+                'icon' => 'bi bi-archive',
+                'active' => request()->routeIs('admin.inventory'),
+                'route' => 'admin.inventory',
+                'space' => false,
+                'child' => [],
+            ],
+            [
                 'hasRole' => 'developer,super-admin,admin',
                 'name' => 'Store Management',
                 'icon' => 'bi bi-shop',

@@ -37,6 +37,12 @@ Route::middleware(['auth', 'visitor'])->group(function () {
         Route::get('/dashboard', App\Livewire\Admin\Dashboard\Index::class)->name('admin.dashboard');
     });
 
+    Route::middleware(['role:admin,user'])->group(function () {
+        Route::get('/sales', App\Livewire\Admin\Sales\Index::class)->name('admin.sales');
+        Route::get('/sales/create', App\Livewire\Admin\Sales\Create::class)->name('admin.sales.create');
+        Route::get('/sales/{id}/edit', App\Livewire\Admin\Sales\Edit::class)->name('admin.sales.edit');
+    });
+
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/inventory', App\Livewire\Admin\Inventory\Index::class)->name('admin.inventory');
 
