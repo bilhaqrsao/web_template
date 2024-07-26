@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin\Components;
 
+use App\Models\Utility\IdentityWeb;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,7 +12,7 @@ class Sidebar extends Component
     {
         $menus = [
             [
-                'hasRole' => 'admin,developer,super-admin,user',
+                'hasRole' => 'admin,developer,super-admin',
                 'name' => 'Dashboard',
                 'icon' => 'bi bi-house',
                 'active' => request()->routeIs('admin.dashboard'),
@@ -20,67 +21,74 @@ class Sidebar extends Component
                 'child' => [],
             ],
             [
-                'hasRole' => 'admin,user',
-                'name' => 'Sales',
-                'icon' => 'bi bi-cash',
-                'active' => request()->routeIs('admin.sales') || request()->routeIs('admin.sales.create') || request()->routeIs('admin.sales.edit'),
-                'route' => 'admin.sales',
-                'space' => true,
-                'child' => [
-                    [
-                        'hasRole' => 'admin,user',
-                        'name' => 'Daftar Penjualan',
-                        'icon' => 'bi bi-cash',
-                        'active' => request()->routeIs('admin.sales'),
-                        'link' => 'admin.sales',
-                    ],
-                ],
+                'hasRole' => 'admin,developer,super-admin',
+                'name' => 'Article',
+                'icon' => 'bi bi-newspaper',
+                'active' => request()->routeIs('admin.articles') || request()->routeIs('admin.articles.create') || request()->routeIs('admin.articles.edit'),
+                'route' => 'admin.articles',
+                'space' => false,
+                'child' => [],
             ],
-            // [
-            //     'hasRole' => 'admin',
-            //     'name' => 'Inventory',
-            //     'icon' => 'bi bi-archive',
-            //     'active' => request()->routeIs('admin.inventory'),
-            //     'route' => 'admin.inventory',
-            //     'space' => false,
-            //     'child' => [],
-            // ],
             [
-                'hasRole' => 'developer,super-admin,admin',
-                'name' => 'Store Management',
-                'icon' => 'bi bi-shop',
-                'active' => request()->routeIs('admin.store') || request()->routeIs('admin.list-store') || request()->routeIs('admin.product'),
-                'route' => 'admin.store',
-                'space' => true,
+                'hasRole' => 'admin,developer,super-admin',
+                'name' => 'Page',
+                'icon' => 'bi bi-file-earmark-text',
+                'active' => request()->routeIs('admin.pages') || request()->routeIs('admin.pages.create') || request()->routeIs('admin.pages.edit'),
+                'route' => 'admin.pages',
+                'space' => false,
+                'child' => [],
+            ],
+            [
+                'hasRole' => 'admin,developer,super-admin',
+                'name' => 'Pengumuman',
+                'icon' => 'bi bi-megaphone',
+                'active' => request()->routeIs('admin.pengumumans') || request()->routeIs('admin.pengumumans.create') || request()->routeIs('admin.pengumumans.edit'),
+                'route' => 'admin.pengumumans',
+                'space' => false,
+                'child' => [],
+            ],
+            [
+                'hasRole' => 'developer,super-admin',
+                'name' => 'Media',
+                'icon' => 'bi bi-collection-play-fill',
+                'active' => request()->routeIs('admin.galleries') || request()->routeIs('admin.videos') || request()->routeIs('admin.banners') || request()->routeIs('admin.berkas'),
+                'route' => '',
                 'child' => [
                     [
                         'hasRole' => 'developer,super-admin',
-                        'name' => 'Daftar Toko',
-                        'icon' => 'bi bi-shop',
-                        'active' => request()->routeIs('admin.list-store'),
-                        'link' => 'admin.list-store',
+                        'name' => 'Galeri',
+                        'icon' => 'bi bi-card-image',
+                        'active' => request()->routeIs('admin.galleries'),
+                        'link' => 'admin.galleries',
                     ],
                     [
-                        'hasRole' => 'admin',
-                        'name' => 'Toko Saya',
-                        'icon' => 'bi bi-shop',
-                        'active' => request()->routeIs('admin.store'),
-                        'link' => 'admin.store',
+                        'hasRole' => 'developer,super-admin',
+                        'name' => 'Video',
+                        'icon' => 'bi bi-card-image',
+                        'active' => request()->routeIs('admin.videos'),
+                        'link' => 'admin.videos',
                     ],
                     [
-                        'hasRole' => 'admin',
-                        'name' => 'Produk',
-                        'icon' => 'bi bi-box',
-                        'active' => request()->routeIs('admin.product'),
-                        'link' => 'admin.product',
+                        'hasRole' => 'developer,super-admin',
+                        'name' => 'Banner',
+                        'icon' => 'bi bi-card-image',
+                        'active' => request()->routeIs('admin.banners'),
+                        'link' => 'admin.banners',
+                    ],
+                    [
+                        'hasRole' => 'developer,super-admin',
+                        'name' => 'Berkas',
+                        'icon' => 'bi bi-card-image',
+                        'active' => request()->routeIs('admin.berkas'),
+                        'link' => 'admin.berkas',
                     ],
                 ],
             ],
             [
                 'hasRole' => 'developer,super-admin',
-                'name' => 'User Management',
-                'icon' => 'bi bi-people',
-                'active' => request()->routeIs('admin.users'),
+                'name' => 'Setting',
+                'icon' => 'bi bi-gear',
+                'active' => request()->routeIs('admin.users') || request()->routeIs('admin.identity-web') || request()->routeIs('admin.menus'),
                 'route' => '',
                 'child' => [
                     [
@@ -89,6 +97,20 @@ class Sidebar extends Component
                         'icon' => 'bi bi-people',
                         'active' => request()->routeIs('admin.users'),
                         'link' => 'admin.users',
+                    ],
+                    [
+                        'hasRole' => 'developer,super-admin',
+                        'name' => 'Menu',
+                        'icon' => 'bi bi-list',
+                        'active' => request()->routeIs('admin.menus'),
+                        'link' => 'admin.menus',
+                    ],
+                    [
+                        'hasRole' => 'developer,super-admin',
+                        'name' => 'Identitas Website',
+                        'icon' => 'bi bi-globe',
+                        'active' => request()->routeIs('admin.identity-web'),
+                        'link' => 'admin.identity-web',
                     ],
                 ],
             ]
@@ -110,10 +132,13 @@ class Sidebar extends Component
         });
 
         $user = Auth::user();
+
+        $identitas = IdentityWeb::first();
         return view('livewire.admin.components.sidebar', [
             'menus' => $filteredMenus,
             'userRoles' => $userRoles,
             'user' => $user,
+            'identitas' => $identitas,
         ]);
 
 

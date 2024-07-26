@@ -175,16 +175,6 @@
                             @error('password') <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
                         <div class="mb-3">
-                            <label for="status" class="form-label">Store</label>
-                            <select class="form-select" wire:model="store_id">
-                                <option value="">Pilih Store</option>
-                                @foreach ($stores as $store)
-                                <option value="{{ $store->id }}">{{ $store->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('store_id') <span class="text-danger">{{ $message }}</span> @enderror
-                        </div>
-                        <div class="mb-3">
                             <label for="role" class="form-label">Role</label>
                             <select class="form-select" wire:model="role">
                                 <option value="">Pilih Role</option>

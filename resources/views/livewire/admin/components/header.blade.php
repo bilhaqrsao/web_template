@@ -23,10 +23,10 @@
     <div class="header-actions gap-3">
 
         <!-- Search container starts -->
-        <div class="search-container d-lg-flex d-none">
+        {{-- <div class="search-container d-lg-flex d-none">
             <input type="text" class="form-control" id="searchData" placeholder="Search">
             <i class="bi bi-search"></i>
-        </div>
+        </div> --}}
         <!-- Search container ends -->
 
         <!-- Header settings starts -->

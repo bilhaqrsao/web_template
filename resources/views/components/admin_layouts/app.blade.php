@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard Templates - One Admin Template</title>
+    <title>{{ $title ?? '' }} - {{ env('APP_NAME') }}</title>
 
     <!-- Meta -->
     <meta name="description" content="Marketplace for Bootstrap Admin Dashboards" />
@@ -33,7 +33,13 @@
     <!-- Toastify CSS -->
     {{-- <link rel="stylesheet" href="{{ asset('admin_assets/vendor/toastify/toastify.css')}}" /> --}}
     <link href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/apexcharts@latest/dist/apexcharts.css">
+    <link rel="stylesheet" href="{{ asset('admin_assets/vendor/daterange/daterange.css') }}" />
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/42.0.1/ckeditor5.css" />
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
     @livewireStyles
+    @stack('styles')
 </head>
 
 <body>
@@ -106,6 +112,10 @@
     <!-- Custom JS files -->
     <script src="{{ asset('admin_assets/js/custom.js')}}"></script>
 
+    <!-- Date Range JS -->
+    <script src="{{ asset('admin_assets/vendor/daterange/daterange.js')}}"></script>
+    <script src="{{ asset('admin_assets/vendor/daterange/custom-daterange.js')}}"></script>
+
     <!-- Additional -->
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <x-livewire-alert::scripts />
@@ -115,16 +125,20 @@
 
     </script>
     <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('closeModal', () => {
-                $('.modal').modal('hide');
-            });
+        window.addEventListener('closeModal', event => {
+            $('#exampleModalCenter').modal('hide');
+            $('.modal-backdrop').remove();
         });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     @livewireScripts
+    @stack('scripts')
 </body>
 
 </html>

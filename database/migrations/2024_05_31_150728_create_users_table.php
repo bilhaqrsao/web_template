@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('address')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->foreignId('store_id')->nullable()->constrained('stores')->nullOnDelete();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->string('google_id')->nullable();
             $table->rememberToken();

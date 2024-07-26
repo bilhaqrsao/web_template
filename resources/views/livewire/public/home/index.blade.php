@@ -7,8 +7,8 @@
             <div class="container">
                 <div class="cs-hero_img">
                     <div class="cs-hero_img_bg cs-bg" data-src="public_assets/img/hero_img_bg.png"></div>
-                    <img src="public_assets/img/hero_img.png" alt="Hero Image" class="wow fadeInRight" data-wow-duration="1s"
-                        data-wow-delay="0.4s">
+                    {{-- <img src="{{ route('admin.barcode') }}" alt="Hero Image" class="wow fadeInRight" data-wow-duration="1s"
+                        data-wow-delay="0.4s"> --}}
                 </div>
                 <div class="cs-hero_text">
                     <div class="cs-hero_secondary_title">Free Forever For All Users.
@@ -20,22 +20,7 @@
                 </div>
                 <div class="cs-hero_shapes">
                     <div class="cs-shape cs-shape_position1">
-                        <img src="public_assets/img/shape/shape_1.svg" alt="Shape">
-                    </div>
-                    <div class="cs-shape cs-shape_position2">
-                        <img src="public_assets/img/shape/shape_2.svg" alt="Shape">
-                    </div>
-                    <div class="cs-shape cs-shape_position3">
-                        <img src="public_assets/img/shape/shape_3.svg" alt="Shape">
-                    </div>
-                    <div class="cs-shape cs-shape_position4">
-                        <img src="public_assets/img/shape/shape_4.svg" alt="Shape">
-                    </div>
-                    <div class="cs-shape cs-shape_position5">
-                        <img src="public_assets/img/shape/shape_5.svg" alt="Shape">
-                    </div>
-                    <div class="cs-shape cs-shape_position6">
-                        <img src="public_assets/img/shape/shape_6.svg" alt="Shape">
+                        {{-- <img src="{{ route('admin.barcode') }}" alt="Barcode"> --}}
                     </div>
                 </div>
             </div>

@@ -2,12 +2,18 @@
 
 namespace App\Livewire\Admin\Dashboard;
 
+use App\Models\Core\Article;
 use Livewire\Component;
 
 class Index extends Component
 {
     public function render()
     {
-        return view('livewire.admin.dashboard.index')->layout('components.admin_layouts.app');
+        // article
+        // jumlah article
+        $sumArticle = Article::count();
+        return view('livewire.admin.dashboard.index')->layout('components.admin_layouts.app')->layoutData([
+            'title' => 'Dashboard',
+        ]);
     }
 }

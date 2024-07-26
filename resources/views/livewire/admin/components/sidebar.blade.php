@@ -2,8 +2,8 @@
 
     <!-- App brand starts -->
     <div class="app-brand px-3 py-2 d-flex align-items-center">
-        <a href="index.html">
-            <img src="{{ asset('images/logo-bilhaq.png') }}" class="logo" alt="{{ $user->name }}" />
+        <a href="{{ route('admin.dashboard') }}">
+            <img src="{{ asset('storage/identitas/'.$identitas->logo) }}" class="logo" alt="{{ $user->name }}" />
         </a>
     </div>
     <!-- App brand ends -->

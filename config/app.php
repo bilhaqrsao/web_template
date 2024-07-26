@@ -83,7 +83,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'id',
 
     /*
     |--------------------------------------------------------------------------
@@ -96,7 +96,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => 'id',
 
     /*
     |--------------------------------------------------------------------------
@@ -109,7 +109,7 @@ return [
     |
     */
 
-    'faker_locale' => 'en_US',
+    'faker_locale' => 'id_ID',
 
     /*
     |--------------------------------------------------------------------------
@@ -174,6 +174,7 @@ return [
         Lab404\Impersonate\ImpersonateServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Lab404\Impersonate\ImpersonateServiceProvider::class,
+        App\Providers\GoogleServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -190,7 +191,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
         'Agent' => Jenssegers\Agent\Facades\Agent::class,
-        'Image' => Intervention\Image\Facades\Image::class
+        'Image' => Intervention\Image\Facades\Image::class,
     ])->toArray(),
 
 ];

@@ -15,11 +15,13 @@ class LogUser extends Model
     protected $fillable = [
         'user_id',
         'activity',
-        'description'
+        'description',
+        'ip_address',
+        'user_agent',
     ];
 
     public function User()
     {
-        return $this->belongsTo(xUser::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

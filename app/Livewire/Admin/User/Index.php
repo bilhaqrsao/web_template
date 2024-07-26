@@ -43,11 +43,6 @@ class Index extends Component
                 $query->where('name', 'like', '%'.$this->search.'%');
                 $query->orWhere('username', 'like', '%'.$this->search.'%');
             })->latest()->paginate(10);
-        }else{
-            $users = User::where('store_id', auth()->user()->store_id)->where('username', '!=', 'dev')->when($this->search, function($query) {
-                $query->where('name', 'like', '%'.$this->search.'%');
-                $query->orWhere('username', 'like', '%'.$this->search.'%');
-            })->latest()->paginate(10);
         }
 
         $userLogin = auth()->user();
@@ -55,16 +50,15 @@ class Index extends Component
         $stores = collect(); // Inisialisasi $stores dengan koleksi kosong sebagai default
         if(auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('developer')){
             $roles = Role::where('name', '!=', 'developer')->where('name', '!=', 'super-admin')->get();
-            $stores = Store::all();
         }elseif(auth()->user()->hasRole('admin')){
             $roles = Role::where('name', '!=', 'developer')->where('name', '!=', 'admin')->where('name', '!=', 'super-admin')->get();
-            $stores = Store::where('id', $userLogin->store_id)->get();
         }
         return view('livewire.admin.user.index', [
             'users' => $users,
             'roles' => $roles,
-            'stores' => $stores
-        ])->layout('components.admin_layouts.app');
+        ])->layout('components.admin_layouts.app')->layoutData([
+            'title' => 'Users',
+        ]);
     }
 
     public function destroy($id)
@@ -85,6 +79,11 @@ class Index extends Component
         if($this->data->photo){
             File::delete('storage/user/'.$this->data->photo);
         }
+        LogUser::create([
+            'user_id' => auth()->user()->id,
+            'activity' => 'Delete',
+            'description' => 'Menghapus user '.$this->data->name
+        ]);
         $this->data->delete();
         // log activity
         if(auth()->user()->HasRole('super-admin')){
@@ -145,6 +144,11 @@ class Index extends Component
     {
         if($this->data->status == 'Active'){
             $this->data->status = 'Inactive';
+            LogUser::create([
+                'user_id' => auth()->user()->id,
+                'activity' => 'Update',
+                'description' => 'Mengubah status pengguna '.$this->data->name.' menjadi Inactive'
+            ]);
             $this->data->save();
             // log activity
             if(auth()->user()->username == 'super-admin'){
@@ -172,6 +176,11 @@ class Index extends Component
 
         }else{
             $this->data->status = 'Active';
+            LogUser::create([
+                'user_id' => auth()->user()->id,
+                'activity' => 'Update',
+                'description' => 'Mengubah status pengguna '.$this->data->name.' menjadi Active'
+            ]);
             $this->data->save();
             // log activity
             if(auth()->user()->HasRole('super-admin')){
@@ -248,7 +257,6 @@ class Index extends Component
             $data->phone = $this->phone;
             $data->password = Hash::make($this->password);
             $data->assignRole($this->role);
-            $data->store_id = $this->store_id;
             if($this->photo){
                 $image = $this->photo;
                 $imageName = 'user-'.time().'.'.$image->extension();
@@ -294,7 +302,6 @@ class Index extends Component
         $this->email = $data->email;
         $this->phone = $data->phone;
         $this->role = $data->role;
-        $this->store_id = $data->store_id;
         $this->prevPhoto = $data->photo;
     }
 
@@ -335,7 +342,6 @@ class Index extends Component
                 $data->password = Hash::make($this->password);
             }
             $data->assignRole($this->role);
-            $data->store_id = $this->store_id;
             if($this->photo){
                 if($data->photo){
                     File::delete('storage/user/'.$data->photo);

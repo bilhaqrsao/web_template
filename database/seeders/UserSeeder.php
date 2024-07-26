@@ -33,16 +33,5 @@ class UserSeeder extends Seeder
             'address' => 'Jl. Super Admin',
             'password' => Hash::make('1'),
         ])->assignRole('super-admin');
-
-        // User::create([
-        //     'photo' => '',
-        //     'name' => 'Admin',
-        //     'username' => 'admin',
-        //     'email' => 'admin@email.com',
-        //     'phone' => '081234567892',
-        //     'address' => 'Jl. Admin',
-        //     'password' => Hash::make('1'),
-        //     'store_id' => 1,
-        // ])->assignRole('admin');
     }
 }

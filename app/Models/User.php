@@ -45,10 +45,4 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-
-    // store relationship
-    public function Store()
-    {
-        return $this->belongsTo(Store::class);
-    }
 }
