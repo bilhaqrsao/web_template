@@ -53,4 +53,11 @@
         </section>
         <!-- END PROJECT LIST-->
     </div>
+    @if ($datas->count() < 3)
+        <style>
+            footer {
+                display: none;
+            }
+        </style>
+    @endif
 </div>
