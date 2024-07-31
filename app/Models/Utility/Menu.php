@@ -10,7 +10,6 @@ class Menu extends Model
 {
     use HasFactory;
 
-    protected $table = 'menus';
     protected $fillable = [
         'type',
         'page_id',
@@ -22,7 +21,7 @@ class Menu extends Model
         'status',
     ];
 
-    public function Page()
+    public function page()
     {
         return $this->belongsTo(Page::class);
     }

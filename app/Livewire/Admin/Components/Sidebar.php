@@ -48,6 +48,15 @@ class Sidebar extends Component
                 'child' => [],
             ],
             [
+                'hasRole' => 'admin,developer,super-admin',
+                'name' => 'Link Terkait',
+                'icon' => 'bi bi-share',
+                'active' => request()->routeIs('admin.link-terkaits'),
+                'route' => 'admin.link-terkaits',
+                'space' => false,
+                'child' => [],
+            ],
+            [
                 'hasRole' => 'developer,super-admin',
                 'name' => 'Media',
                 'icon' => 'bi bi-collection-play-fill',

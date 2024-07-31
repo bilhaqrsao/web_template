@@ -22,11 +22,11 @@ class Edit extends Component
     public $created_at;
     public $meta_title;
     public $url;
-    public $isPublished = false; // Default is unchecked, meaning Draft
-    public $status = 'Draft'; // Default status is Draft
+    public $isPublished = false;
+    public $status = 'Draft';
     public $pageId, $slug;
     public $prevThumbnail;
-    public $tags = []; // Properti untuk tag
+    public $tags = [];
 
     public function mount($id)
     {
@@ -38,27 +38,12 @@ class Edit extends Component
             $this->meta_title = $data->meta_title;
             $this->content = $data->content;
             $this->created_at = $data->created_at->format('Y-m-d');
-            $this->url = $data->slug; // Pastikan url terisi
+            $this->url = $data->slug;
             $this->status = $data->status;
             $this->prevThumbnail = $data->thumbnail;
             $this->isPublished = $data->status === 'Publish';
 
-            // Set tags selected with select2 to $this->tags
-            $tags = json_decode($data->tags_id);
-            $this->tags = $tags ? Tag::whereIn('id', $tags)->pluck('name')->toArray() : [];
-
-            $dom = new \DOMDocument();
-            libxml_use_internal_errors(true);
-            $dom->loadHTML($this->content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-            libxml_clear_errors();
-            $images = $dom->getElementsByTagName('img');
-            foreach ($images as $img) {
-                $src = $img->getAttribute('src');
-                if (strpos($src, 'http') !== 0) {
-                    $img->setAttribute('src', asset('storage/page/' . $src));
-                }
-            }
-            $this->content = $dom->saveHTML();
+            $this->tags = $data->tags()->pluck('name')->toArray();
         }
     }
 
@@ -102,22 +87,20 @@ class Edit extends Component
             $data->title = $this->title;
             $data->slug = Str::slug($this->title);
             $data->meta_title = Str::limit($this->title, 60);
-            $data->status = $this->isPublished ? 'Publish' : 'Draft'; // Set status based on checkbox
+            $data->status = $this->isPublished ? 'Publish' : 'Draft';
 
             if ($this->thumbnail) {
-                // Delete old thumbnail if exists
                 if ($this->prevThumbnail && file_exists(public_path('storage/page/' . $this->prevThumbnail))) {
                     unlink(public_path('storage/page/' . $this->prevThumbnail));
                 }
-                // Save new thumbnail
+
                 $thumbnailName = Str::slug($this->title) . '.webp';
-                $image = imagecreatefromstring(file_get_contents($this->thumbnail->getRealPath()));
+                $image = Image::make($this->thumbnail->getRealPath())->encode('webp', 80);
                 $destinationPath = public_path('storage/page');
                 if (!file_exists($destinationPath)) {
                     mkdir($destinationPath, 0755, true);
                 }
-                imagewebp($image, $destinationPath . '/' . $thumbnailName, 80);
-                imagedestroy($image); // Release memory
+                $image->save($destinationPath . '/' . $thumbnailName);
                 $data->thumbnail = $thumbnailName;
             }
 
@@ -146,7 +129,6 @@ class Edit extends Component
                 }
             }
 
-            // Find and delete unused images
             $oldContentDom = new \DOMDocument();
             libxml_use_internal_errors(true);
             $oldContentDom->loadHTML($data->content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
@@ -164,28 +146,31 @@ class Edit extends Component
             $data->created_at = $this->created_at;
             $data->user_id = auth()->user()->id;
 
-            // Menangani penyimpanan tag
-            if ($this->tags) {
-                $tagIds = [];
-                foreach ($this->tags as $tag) {
-                    // Tambahkan tag baru jika belum ada, atau ambil ID jika sudah ada
-                    $tagModel = Tag::firstOrCreate(['name' => $tag], ['slug' => Str::slug($tag)]);
-                    $tagIds[] = (string) $tagModel->id; // Konversi ID ke string
-                }
-                $data->tags_id = json_encode($tagIds, JSON_UNESCAPED_SLASHES); // Simpan ID sebagai JSON dalam bentuk string
-            } else {
-                $data->tags_id = json_encode([]); // Simpan array kosong jika tidak ada tag
+            $newTags = array_map('trim', $this->tags);
+            $existingTags = Tag::whereIn('name', $newTags)->pluck('id', 'name')->toArray();
+
+            $data->tags()->sync([]);
+
+            foreach ($newTags as $tagName) {
+                $tag = Tag::firstOrCreate(
+                    ['name' => $tagName],
+                    ['slug' => Str::slug($tagName)]
+                );
+
+                $data->tags()->attach($tag->id);
             }
+
             LogUser::create([
                 'user_id' => auth()->user()->id,
                 'activity' => 'Update',
                 'description' => 'Mengubah halaman ' . $this->title
             ]);
+
             $data->save();
 
             $this->flash('success', 'Data berhasil diperbarui', [], route('admin.pages'));
         } catch (\Exception $e) {
-            $this->emit('error', $e->getMessage());
+            $this->alert('error', $e->getMessage());
         }
     }
 }

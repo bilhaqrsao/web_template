@@ -7,6 +7,7 @@ use App\Models\Core\Page;
 use App\Models\Utility\Tag;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
+use App\Models\Utility\PivotTags;
 use App\Models\LogActivity\LogUser;
 use App\Models\Utility\IdentityWeb;
 use Intervention\Image\Facades\Image;
@@ -47,12 +48,12 @@ class Create extends Component
 
     public function store()
     {
-        try{
+        try {
             $this->validate([
                 'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                'title' => 'required|min:10',
+                'title' => 'required',
                 'created_at' => 'required|date',
-                'content' => 'required|min:100',
+                'content' => 'required',
             ], [
                 'thumbnail.required' => 'Gambar thumbnail tidak boleh kosong',
                 'thumbnail.image' => 'File yang diupload harus berupa gambar',
@@ -107,23 +108,34 @@ class Create extends Component
             $data->created_at = $this->created_at;
             $data->user_id = auth()->user()->id;
 
-            if ($this->tags) {
-                $tagIds = [];
-                foreach ($this->tags as $tag) {
-                    // Tambahkan tag baru jika belum ada, atau ambil ID jika sudah ada
-                    $tagModel = Tag::firstOrCreate(['name' => $tag], ['slug' => Str::slug($tag)]);
-                    $tagIds[] = (string) $tagModel->id; // Konversi ID ke string
-                }
-                $data->tags_id = json_encode(array_map('strval', $tagIds), JSON_UNESCAPED_SLASHES); // Simpan ID sebagai JSON dalam bentuk string
-            } else {
-                $data->tags_id = json_encode([]); // Simpan array kosong jika tidak ada tag
+            $data->save(); // Save the page first to get the id
+
+            // Handle tags
+            foreach ($this->tags as $tagName) {
+                $tag = Tag::firstOrCreate(
+                    ['name' => $tagName],
+                    ['slug' => Str::slug($tagName)]
+                );
+
+                // Create pivot entry
+                PivotTags::updateOrCreate(
+                    [
+                        'taggable_type' => 'page',
+                        'taggable_id' => $data->id,
+                        'tag_id' => $tag->id,
+                    ],
+                    [
+                        'taggable_type' => 'page',
+                        'taggable_id' => $data->id,
+                        'tag_id' => $tag->id,
+                    ]
+                );
             }
             LogUser::create([
                 'user_id' => auth()->user()->id,
                 'activity' => 'Create',
                 'description' => 'Menambahkan halaman ' . $this->title
             ]);
-            $data->save();
 
             $this->flash('success', 'Data berhasil disimpan', [], route('admin.pages'));
         } catch (\Exception $e) {

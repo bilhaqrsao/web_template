@@ -18,9 +18,9 @@ return new class extends Migration
             $table->string('meta_title')->nullable();
             $table->string('thumbnail')->nullable();
             $table->longText('content')->nullable();
-            $table->json('tags_id')->nullable();
             $table->enum('status', ['Draft', 'Publish'])->default('Draft');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->integer('view')->default(0);
             $table->timestamps();
         });
     }

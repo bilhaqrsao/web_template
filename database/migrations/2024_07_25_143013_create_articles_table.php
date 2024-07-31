@@ -22,7 +22,6 @@ return new class extends Migration
             $table->longText('content')->nullable();
             $table->enum('status', ['Draft', 'Publish'])->default('Draft');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->json('tags_id')->nullable();
             $table->integer('view_count')->default(0);
             $table->timestamps();
         });

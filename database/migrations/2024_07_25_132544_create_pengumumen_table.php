@@ -19,7 +19,6 @@ return new class extends Migration
             $table->longText('content')->nullable();
             $table->enum('status', ['Publish', 'Draft'])->default('Draft');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->json('tags_id')->nullable();
             $table->timestamps();
         });
     }

@@ -114,6 +114,9 @@ class Index extends Component
         ]);
 
         $this->data->delete();
+
+        // delete pivot tags
+        $this->data->tags()->detach();
         $this->alert('success', 'Data Berhasil Dihapus');
     }
 

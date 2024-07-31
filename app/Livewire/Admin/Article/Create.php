@@ -7,8 +7,9 @@ use Livewire\Component;
 use App\Models\Utility\Tag;
 use Illuminate\Support\Str;
 use App\Models\Core\Article;
-use App\Models\LogActivity\LogUser;
 use Livewire\WithFileUploads;
+use App\Models\Utility\PivotTags;
+use App\Models\LogActivity\LogUser;
 use App\Models\Utility\IdentityWeb;
 use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
@@ -70,6 +71,7 @@ class Create extends Component
             $data->description = $this->description;
             $data->meta_description = Str::limit($this->description, 160);
 
+            // Process content with inline images
             $dom = new \DOMDocument();
             libxml_use_internal_errors(true);
             $dom->loadHtml($this->content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
@@ -92,6 +94,7 @@ class Create extends Component
 
             $data->content = $dom->saveHTML();
 
+            // Handle thumbnail
             if ($this->thumbnail) {
                 $thumbnailName = Str::slug($this->title) . '.webp';
                 $image = Image::make($this->thumbnail->getRealPath())->encode('webp', 80);
@@ -106,21 +109,31 @@ class Create extends Component
             $data->user_id = auth()->user()->id;
             $data->created_at = $this->created_at;
             $data->status = $this->isPublished ? 'Publish' : 'Draft';
-
-            if ($this->tags) {
-                $tagIds = [];
-                foreach ($this->tags as $tag) {
-                    $tagModel = Tag::firstOrCreate(['name' => $tag], ['slug' => Str::slug($tag)]);
-                    $tagIds[] = (string) $tagModel->id;
-                }
-                $data->tags_id = json_encode(array_map('strval', $tagIds), JSON_UNESCAPED_SLASHES);
-            } else {
-                $data->tags_id = json_encode([]);
-            }
-
             $data->save();
 
-            // create log
+            // Handle tags
+            foreach ($this->tags as $tagName) {
+                $tag = Tag::firstOrCreate(
+                    ['name' => $tagName],
+                    ['slug' => Str::slug($tagName)]
+                );
+
+                // Create pivot entry
+                PivotTags::updateOrCreate(
+                    [
+                        'taggable_type' => 'article',
+                        'taggable_id' => $data->id,
+                        'tag_id' => $tag->id,
+                    ],
+                    [
+                        'taggable_type' => 'article',
+                        'taggable_id' => $data->id,
+                        'tag_id' => $tag->id,
+                    ]
+                );
+            }
+
+            // Create log
             LogUser::create([
                 'user_id' => auth()->user()->id,
                 'activity' => 'Create',
@@ -131,4 +144,6 @@ class Create extends Component
             $this->alert('error', $e->getMessage());
         }
     }
+
+
 }

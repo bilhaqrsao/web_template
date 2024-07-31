@@ -135,6 +135,8 @@ class Index extends Component
             'activity' => 'Delete',
             'description' => 'Menghapus halaman ' . $this->data->title
         ]);
+
+        $this->data->tags()->detach();
         $this->data->delete();
         $this->alert('success', 'Data Berhasil Dihapus');
 

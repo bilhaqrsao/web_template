@@ -54,7 +54,7 @@ class Index extends Component
             $this->validate([
                 'title' => 'required',
                 'description' => 'nullable',
-                'images.*' => 'image|max:1024',
+                'images.*' => 'image',
             ],[
                 'title.required' => 'Judul tidak boleh kosong',
                 'description.required' => 'Deskripsi tidak boleh kosong',
@@ -134,7 +134,7 @@ class Index extends Component
             $this->validate([
                 'title' => 'required',
                 'description' => 'nullable',
-                'images.*' => 'image|max:1024',
+                'images.*' => 'image',
             ],[
                 'title.required' => 'Judul tidak boleh kosong',
                 'description.required' => 'Deskripsi tidak boleh kosong',

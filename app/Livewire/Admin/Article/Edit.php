@@ -6,8 +6,9 @@ use Livewire\Component;
 use App\Models\Utility\Tag;
 use Illuminate\Support\Str;
 use App\Models\Core\Article;
-use App\Models\LogActivity\LogUser;
 use Livewire\WithFileUploads;
+use App\Models\Utility\PivotTags;
+use App\Models\LogActivity\LogUser;
 use App\Models\Utility\IdentityWeb;
 use Illuminate\Support\Facades\Log;
 use Intervention\Image\Facades\Image;
@@ -44,20 +45,28 @@ class Edit extends Component
     public function mount($id)
     {
         $article = Article::find($id);
+        $this->id = $article->id;
         $this->prevThumbnail = $article->thumbnail;
         $this->title = $article->title;
         $this->url = $article->slug;
         $this->content = $article->content;
         $this->created_at = $article->created_at->format('Y-m-d');
         $this->meta_title = $article->meta_title;
-        $this->url = $article->url;
-        $this->isPublished = $article->status === 'Publish' ? 'Draft' : 'Publish';
         $this->meta_description = $article->meta_description;
         $this->description = $article->description;
+        $this->isPublished = $article->status === 'Publish' ? 'Publish' : 'Draft';
 
-        $tags = json_decode($article->tags_id);
-        $this->tags = $tags ? Tag::whereIn('id', $tags)->pluck('name')->toArray() : [];
+        // Load tags associated with the article
+        $tags = PivotTags::where('taggable_type', 'article')
+            ->where('taggable_id', $article->id)
+            ->with('tag')
+            ->get();
 
+        foreach ($tags as $tag) {
+            $this->tags[] = $tag->getTags->name;
+        }
+
+        // Update content to ensure images are accessible
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
         $dom->loadHTML($this->content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
@@ -72,7 +81,8 @@ class Edit extends Component
         $this->content = $dom->saveHTML();
     }
 
-    public function update()
+
+   public function update()
     {
         $this->validate([
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
@@ -124,7 +134,6 @@ class Edit extends Component
                 }
             }
 
-            // Find and delete unused images
             $oldContentDom = new \DOMDocument();
             libxml_use_internal_errors(true);
             $oldContentDom->loadHTML($article->content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
@@ -141,7 +150,7 @@ class Edit extends Component
             $article->content = $dom->saveHTML();
             $article->status = $this->isPublished === 'Publish' ? 'Publish' : 'Draft';
             $article->user_id = auth()->user()->id;
-            $article->tags_id = Tag::whereIn('name', $this->tags)->pluck('id')->toJson();
+
             if ($this->thumbnail) {
                 if ($this->prevThumbnail && file_exists(public_path('storage/article/' . $this->prevThumbnail))) {
                     unlink(public_path('storage/article/' . $this->prevThumbnail));
@@ -156,16 +165,36 @@ class Edit extends Component
                 $article->thumbnail = $thumbnailName;
             }
 
+            // Update tags
+            $newTags = array_map('trim', $this->tags);
+            $existingTags = Tag::whereIn('name', $newTags)->pluck('id', 'name')->toArray();
+
+            // Sync tags
+            $article->tags()->sync([]);
+
+            foreach ($newTags as $tagName) {
+                $tag = Tag::firstOrCreate(
+                    ['name' => $tagName],
+                    ['slug' => Str::slug($tagName)]
+                );
+
+                $article->tags()->attach($tag->id);
+            }
+
             $article->save();
+
             LogUser::create([
                 'user_id' => auth()->user()->id,
                 'activity' => 'Update',
                 'description' => "Memperbarui artikel dengan judul: {$this->title}",
             ]);
+
             $this->flash('success', 'Data berhasil diperbarui', [], route('admin.articles'));
         } catch (\Exception $e) {
             $this->alert('error', 'Failed to update article');
             Log::error("Failed to update article: {$e->getMessage()}");
         }
     }
+
+
 }

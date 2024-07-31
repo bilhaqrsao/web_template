@@ -10,7 +10,7 @@
         </div>
         {{-- make button tambah di ujung kanan --}}
         <div class="d-flex align-items-center ms-auto">
-            <a href="{{ route('admin.pengumumans.create') }}" class="btn btn-primary">
+            <a href="{{ route('admin.pengumumans.create') }}" class="btn app-btn-primary">
                 <i class="bi bi-plus"></i>
                 Tambah Pengumuman
             </a>

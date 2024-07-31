@@ -103,7 +103,7 @@ class Index extends Component
         LogUser::create([
             'user_id' => auth()->user()->id,
             'activity' => 'Delete',
-            'detail' => 'Menghapus data pengumuman ' . $this->data->title,
+            'description' => 'Menghapus data pengumuman ' . $this->data->title,
         ]);
         $this->data->delete();
         $this->alert('success', 'Data Berhasil Dihapus');
@@ -129,7 +129,7 @@ class Index extends Component
         LogUser::create([
             'user_id' => auth()->user()->id,
             'activity' => 'Update',
-            'detail' => 'Mengubah status data pengumuman ' . $this->data->title,
+            'description' => 'Mengubah status data pengumuman ' . $this->data->title,
         ]);
         $this->data->save();
         $this->alert('success', 'Status Berhasil Diubah');

@@ -7,6 +7,7 @@ use App\Models\Utility\Tag;
 use Illuminate\Support\Str;
 use Livewire\WithFileUploads;
 use App\Models\Core\Pengumuman;
+use App\Models\Utility\PivotTags;
 use App\Models\LogActivity\LogUser;
 use Intervention\Image\Facades\Image;
 use Jantinnerezo\LivewireAlert\LivewireAlert;
@@ -14,7 +15,8 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 class Edit extends Component
 {
     use WithFileUploads,LivewireAlert;
-    public $title, $content, $prevImage, $image, $dataId, $status, $tags, $created_at;
+    public $title, $content, $prevImage, $image, $dataId, $status, $created_at;
+    public $tags = [];
 
     public function render()
     {
@@ -34,8 +36,15 @@ class Edit extends Component
         $this->content = $data->content;
         $this->prevImage = $data->image;
         $this->created_at = $data->created_at->format('Y-m-d');
-        $tags = json_decode($data->tags_id);
-        $this->tags = $tags ? Tag::whereIn('id', $tags)->pluck('name')->toArray() : [];
+
+        $tags = PivotTags::where('taggable_type', 'pengumuman')
+            ->where('taggable_id', $id)
+            ->with('getTags')
+            ->get();
+
+        foreach ($tags as $tag) {
+            $this->tags[] = $tag->getTags->name;
+        }
 
         $dom = new \DOMDocument();
         libxml_use_internal_errors(true);
@@ -122,17 +131,21 @@ class Edit extends Component
             }
 
             $data->content = $dom->saveHTML();
-            if ($this->tags) {
-                $tagIds = [];
-                foreach ($this->tags as $tag) {
-                    // Tambahkan tag baru jika belum ada, atau ambil ID jika sudah ada
-                    $tagModel = Tag::firstOrCreate(['name' => $tag], ['slug' => Str::slug($tag)]);
-                    $tagIds[] = (string) $tagModel->id; // Konversi ID ke string
-                }
-                $data->tags_id = json_encode(array_map('strval', $tagIds), JSON_UNESCAPED_SLASHES); // Simpan ID sebagai JSON dalam bentuk string
-            } else {
-                $data->tags_id = json_encode([]); // Simpan array kosong jika tidak ada tag
+
+            $newTags = array_map('trim', $this->tags);
+            $existingTags = Tag::whereIn('name', $newTags)->pluck('id', 'name')->toArray();
+
+            $data->tags()->sync([]);
+
+            foreach ($newTags as $tagName) {
+                $tag = Tag::firstOrCreate(
+                    ['name' => $tagName],
+                    ['slug' => Str::slug($tagName)]
+                );
+
+                $data->tags()->attach($tag->id);
             }
+
             LogUser::create([
                 'user_id' => auth()->user()->id,
                 'activity' => 'Update',

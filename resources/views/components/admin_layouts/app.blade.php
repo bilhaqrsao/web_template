@@ -1,3 +1,7 @@
+<?php
+    use App\Models\Utility\IdentityWeb;
+    $identitas = IdentityWeb::first();
+?>
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light">
 
@@ -15,7 +19,7 @@
     <meta property="og:description" content="Marketplace for Bootstrap Admin Dashboards">
     <meta property="og:type" content="Website">
     <meta property="og:site_name" content="Bootstrap Gallery">
-    <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" />
+    <link rel="shortcut icon" href="{{ asset('storage/identitas/'.$identitas->favicon) }}" />
 
     <!-- *************
 			************ CSS Files *************
@@ -130,6 +134,12 @@
             $('.modal-backdrop').remove();
         });
     </script>
+    <script>
+         window.addEventListener('closeModal', event => {
+            $('.modal').modal('hide');
+            $('.modal-backdrop').remove();
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -137,6 +147,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     @livewireScripts
     @stack('scripts')
 </body>
