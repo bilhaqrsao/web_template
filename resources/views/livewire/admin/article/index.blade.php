@@ -71,7 +71,8 @@
                 </div>
                 @endforelse
             </div>
-
+            <!-- Row end -->
+            {{ $datas->links('vendor.pagination.bootstrap-5') }}
             <!-- Row end -->
         </div>
         <!-- App body ends -->

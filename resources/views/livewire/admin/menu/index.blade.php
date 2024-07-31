@@ -151,7 +151,6 @@
             </div>
             @endforeach
         </div>
-        <!-- Row end -->
     </div>
     <!-- App body ends -->
 

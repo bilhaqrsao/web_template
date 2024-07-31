@@ -12,7 +12,7 @@ use Jantinnerezo\LivewireAlert\LivewireAlert;
 class Index extends Component
 {
     use WithPagination,LivewireAlert;
-    public $showPage = 10;
+    public $showPage = 21;
     public $search, $data;
 
     public function getListeners()

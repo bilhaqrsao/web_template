@@ -80,6 +80,9 @@
             @endforelse
         </div>
         <!-- Row end -->
+        <div class="d-flex justify-content-center">
+            {{ $datas->links('vendor.pagination.bootstrap-5') }}
+        </div>
     </div>
     <!-- App body ends -->
 
