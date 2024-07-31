@@ -19,7 +19,7 @@
         </div>
         <!-- END OF SLIDER WRAPPER-->
         <!-- PRODUCT, STYLE 4-->
-        <section class="product product-layout style-3">
+        {{-- <section class="product product-layout style-3">
             <div class="container">
                 <div class="heading">
                     <h3 class="heading-section" style="margin-bottom: 20px;">Layanan</h3>
@@ -77,7 +77,7 @@
                     </div>
                 </div>
             </div>
-        </section>
+        </section> --}}
         <!-- END PRODUCT, STYLE 4-->
 
         <div class="page-content services-detail-2">
@@ -87,7 +87,7 @@
                         <div
                             style="display: flex; justify-content: space-between; margin-bottom: 20px; margin-top: 20px;">
                             <h3 style="margin-top: 0px;">Berita Terbaru</h3>
-                            <a href="#">Berita Lainnya</a>
+                            <a href="{{ route('public.articles') }}">Berita Lainnya</a>
                         </div>
                         <!-- SLIDER, STYLE 2-->
                         <div class="slider slider-medium-layout style-1 style-2">

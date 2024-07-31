@@ -39,6 +39,8 @@ $detailPage = Page::where('slug', request()->segment(1))->first();
     <link rel="stylesheet" href="{{ asset('assets/fonts/Linearicons-Free-v1.0.0/style.css')}}">
     <!--Theme style-->
     <link href="{{ asset('assets/css/main.css')}}" rel="stylesheet">
+    @livewireStyles
+    @stack('styles')
 </head>
 
 <body>
@@ -66,6 +68,10 @@ $detailPage = Page::where('slug', request()->segment(1))->first();
     <script src="{{ asset('assets/js/custom.js')}}"></script>
     <script type="text/javascript" src="https://widget.kominfo.go.id/gpr-widget-kominfo.min.js"></script>
     <!--End script-->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <x-livewire-alert::scripts />
+    @livewireScripts
+    @stack('scripts')
 </body>
 
 </html>

@@ -7,7 +7,7 @@
             <div class="container">
                 <ul class="au-breadcrumb">
                     <li class="au-breadcrumb-item">
-                        <a href="index.html">Home</a>
+                        <a href="{{ route('public.index') }}">Home</a>
                     </li>
                     <li class="au-breadcrumb-item active">
                         <a href="#">Berita</a>

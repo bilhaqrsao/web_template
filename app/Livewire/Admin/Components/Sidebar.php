@@ -57,6 +57,15 @@ class Sidebar extends Component
                 'child' => [],
             ],
             [
+                'hasRole' => 'admin,developer,super-admin',
+                'name' => 'Kritik & Saran',
+                'icon' => 'bi bi-flag',
+                'active' => request()->routeIs('admin.feedback'),
+                'route' => 'admin.feedback',
+                'space' => false,
+                'child' => [],
+            ],
+            [
                 'hasRole' => 'developer,super-admin',
                 'name' => 'Media',
                 'icon' => 'bi bi-collection-play-fill',

@@ -103,6 +103,8 @@ Route::middleware(['auth'])->group(function () {
     // Rute user admin
     Route::middleware(['role:admin,super-admin,developer'])->group(function () {
         Route::get('/panel-admin/users', App\Livewire\Admin\User\Index::class)->name('admin.users');
+
+        Route::get('/kritik-saran', App\Livewire\Admin\Feedback\Index::class)->name('admin.feedback');
     });
 
     //  Rute super admin
